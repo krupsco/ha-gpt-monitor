@@ -1,7 +1,5 @@
 import streamlit as st
 
-st.write("Dostępne sekrety:", st.secrets)
-st.write("home_assistant url:", st.secrets.get("home_assistant", {}))
 
 
 from ha import get_current_state
