@@ -59,9 +59,17 @@ def calculate_norms_for_entity(entity_id):
 
     return norm_dict
 
-def detect_anomaly(current_value, norm):
+def detect_anomaly(current_value, norm_dict):
+    if norm_dict is None:
+        return False
+
+    now = datetime.now()
+    key = f"{now.weekday()}_{now.hour}"
+
+    norm = norm_dict.get(key)
     if not norm:
         return False
+
     return current_value < norm["low"] or current_value > norm["high"]
 
 def calculate_norms(filepath="data/history.csv"):
