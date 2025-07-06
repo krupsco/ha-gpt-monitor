@@ -78,7 +78,16 @@ def calculate_norms(filepath="data/history.csv"):
 
     return norm
 
-def detect_anomaly(current_value, norm):
-    if norm is None:
+def detect_anomaly(current_value, norm_dict):
+    if norm_dict is None:
         return False
+
+    now = datetime.now()
+    key = (now.weekday(), now.hour)  # dzisiaj i aktualna godzina
+
+    norm = norm_dict.get(key)
+    if not norm:
+        # Brak normy dla tego czasu, można uznać brak anomalii lub podjąć inną decyzję
+        return False
+
     return current_value < norm["low"] or current_value > norm["high"]
