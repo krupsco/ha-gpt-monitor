@@ -7,7 +7,6 @@ import pytz
 tz = pytz.timezone("Europe/Warsaw")
 now = datetime.now(tz)
 
-st.write(f"Obecny czas lokalny: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
 def calculate_norms_for_entity(entity_id):
     safe_id = entity_id.replace(".", "_")
