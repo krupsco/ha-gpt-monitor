@@ -45,14 +45,16 @@ for entity_id in entities:
     if not data:
         continue
 
-    state = float(data["state"])  # ← najpierw definiujemy state
-    save_state_to_history(entity_id, state)  # ← dopiero potem zapisujemy
+    state = float(data["state"])
+    save_state_to_history(entity_id, state)
 
     unit = data["attributes"].get("unit_of_measurement", "")
     name = data["attributes"].get("friendly_name", "Brak nazwy")
 
-    norm = calculate_norms_for_entity(entity_id)
-    is_anomaly = detect_anomaly(state, norm) if norm else False
+    norm = calculate_norms_for_entity(entity_id)  # zwraca słownik norm wg czasu
+    is_anomaly = detect_anomaly(state, norm)
+
+    # reszta UI z podświetleniem jeśli is_anomaly True
 
     card_class = "sensor-card anomaly" if is_anomaly else "sensor-card"
 
