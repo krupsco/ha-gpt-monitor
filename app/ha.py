@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 from utils import log_data
 import streamlit as st
+import os
 
 def get_state_for_entity(entity_id):
     url = st.secrets["home_assistant"]["url"].strip()
