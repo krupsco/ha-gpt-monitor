@@ -6,19 +6,44 @@ def calculate_norms_for_entity(entity_id):
     safe_id = entity_id.replace(".", "_")
     filepath = f"data/{safe_id}_history.csv"
     if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
+        print(f"Brak danych dla {entity_id}")
         return None
 
     df = pd.read_csv(filepath)
-    if "state" not in df.columns:
+    if df.empty or "state" not in df.columns or "timestamp" not in df.columns:
+        print(f"Brak wymaganych kolumn w historii {entity_id}")
         return None
 
-    values = df["state"].dropna()
-    return {
-        "mean": values.mean(),
-        "std": values.std(),
-        "low": values.quantile(0.05),
-        "high": values.quantile(0.95)
-    }
+    # Zamiana timestamp na datetime i dodanie kolumn pomocniczych
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["day_of_week"] = df["timestamp"].dt.dayofweek  # 0=poniedziałek, 6=niedziela
+    df["hour"] = df["timestamp"].dt.hour
+
+    # Grupowanie wg dnia tygodnia i godziny, liczenie statystyk
+    grouped = df.groupby(["day_of_week", "hour"])["state"].agg(
+        mean="mean",
+        std="std",
+        low=lambda x: x.quantile(0.05),
+        high=lambda x: x.quantile(0.95)
+    ).reset_index()
+
+    # Konwersja na słownik do szybkiego wyszukiwania normy
+    norm_dict = {}
+    for _, row in grouped.iterrows():
+        key = (int(row["day_of_week"]), int(row["hour"]))
+        norm_dict[key] = {
+            "mean": row["mean"],
+            "std": row["std"],
+            "low": row["low"],
+            "high": row["high"]
+        }
+
+    # Zapis norm do pliku JSON
+    norm_file = f"data/{safe_id}_norms.json"
+    with open(norm_file, "w") as f:
+        json.dump(norm_dict, f)
+
+    return norm_dict
 
 def detect_anomaly(current_value, norm):
     if not norm:
