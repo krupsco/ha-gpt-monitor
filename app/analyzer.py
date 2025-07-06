@@ -2,7 +2,12 @@ import os
 import pandas as pd
 import json
 from datetime import datetime
+import pytz
 
+tz = pytz.timezone("Europe/Warsaw")
+now = datetime.now(tz)
+
+st.write(f"Obecny czas lokalny: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 
 def calculate_norms_for_entity(entity_id):
     safe_id = entity_id.replace(".", "_")
@@ -106,7 +111,7 @@ def detect_anomaly(current_value, norm_dict):
     if norm_dict is None:
         return False
 
-    now = datetime.now(tz=ZoneInfo("Europe/Warsaw"))  # <-- tu ustawiasz strefę czasową
+    now = datetime.now(tz)  # Ustawiona strefa czasowa z pytz
     key = f"{now.weekday()}_{now.hour}"
 
     norm = norm_dict.get(key)
