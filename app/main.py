@@ -6,7 +6,7 @@ import pandas as pd
 import os
 from ha import save_state_to_history
 
-
+now = datetime.now(tz=ZoneInfo("Europe/Warsaw"))
 st.set_page_config(layout="wide")
 st.title("📡 Monitor czujników z Home Assistant + GPT")
 
