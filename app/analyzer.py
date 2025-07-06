@@ -14,18 +14,32 @@ def calculate_norms_for_entity(entity_id):
         print(f"Brak wymaganych kolumn w historii {entity_id}")
         return None
 
-    # Zamiana timestamp na datetime i dodanie kolumn pomocniczych
     df["timestamp"] = pd.to_datetime(df["timestamp"])
-    df["day_of_week"] = df["timestamp"].dt.dayofweek  # 0=poniedziałek, 6=niedziela
+    df["day_of_week"] = df["timestamp"].dt.dayofweek
     df["hour"] = df["timestamp"].dt.hour
 
-    # Grupowanie wg dnia tygodnia i godziny, liczenie statystyk
     grouped = df.groupby(["day_of_week", "hour"])["state"].agg(
         mean="mean",
         std="std",
         low=lambda x: x.quantile(0.05),
         high=lambda x: x.quantile(0.95)
     ).reset_index()
+
+    norm_dict = {}
+    for _, row in grouped.iterrows():
+        key = f"{int(row['day_of_week'])}_{int(row['hour'])}"  # klucz jako string
+        norm_dict[key] = {
+            "mean": row["mean"],
+            "std": row["std"],
+            "low": row["low"],
+            "high": row["high"]
+        }
+
+    norm_file = f"data/{safe_id}_norms.json"
+    with open(norm_file, "w") as f:
+        json.dump(norm_dict, f)
+
+    return norm_dict
 
     # Konwersja na słownik do szybkiego wyszukiwania normy
     norm_dict = {}
