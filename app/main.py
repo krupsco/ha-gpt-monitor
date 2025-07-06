@@ -62,9 +62,16 @@ for entity_id in entities:
     norm = calculate_norms_for_entity(entity_id)
     is_anomaly = detect_anomaly(state, norm)
 
+
     card_class = "sensor-card anomaly" if is_anomaly else "sensor-card"
 
-    norm_display = f"{norm['low']} – {norm['high']} {unit}" if norm else "Brak danych"
+now = datetime.now()
+current_key = f"{now.weekday()}_{now.hour}"
+current_norm = norm.get(current_key) if norm else None
+
+norm_display = (
+    f"{current_norm['low']} – {current_norm['high']} {unit}" if current_norm else "Brak danych"
+)
 
     with st.container():
         st.markdown(f'<div class="{card_class}">', unsafe_allow_html=True)
