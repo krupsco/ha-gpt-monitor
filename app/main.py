@@ -51,7 +51,6 @@ for entity_id in entities:
     unit = data["attributes"].get("unit_of_measurement", "")
     name = data["attributes"].get("friendly_name", "Brak nazwy")
 
-
     norm = calculate_norms_for_entity(entity_id)
     is_anomaly = detect_anomaly(state, norm) if norm else False
 
