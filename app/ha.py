@@ -5,6 +5,7 @@ from datetime import datetime
 import csv
 
 
+
 def get_state_for_entity(entity_id):
     url = st.secrets["home_assistant"]["url"].strip()
     token = st.secrets["home_assistant"]["token"]
@@ -58,13 +59,10 @@ def save_state_to_history(entity_id, state):
 
     os.makedirs("data", exist_ok=True)
 
-    new_entry = {"timestamp": timestamp, "state": state}
-
     file_exists = os.path.exists(filepath)
     with open(filepath, mode="a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["timestamp", "state"])
         if not file_exists:
             writer.writeheader()
-        writer.writerow(new_entry)
-
+        writer.writerow({"timestamp": timestamp, "state": state})
 
