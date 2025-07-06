@@ -49,3 +49,20 @@ def get_current_state():
     else:
         return None
 
+def save_state_to_history(entity_id, state):
+    safe_id = entity_id.replace(".", "_")
+    filepath = f"data/{safe_id}_history.csv"
+    timestamp = datetime.now().isoformat()
+
+    os.makedirs("data", exist_ok=True)
+
+    new_entry = {"timestamp": timestamp, "state": state}
+
+    file_exists = os.path.exists(filepath)
+    with open(filepath, mode="a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=["timestamp", "state"])
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(new_entry)
+
+
