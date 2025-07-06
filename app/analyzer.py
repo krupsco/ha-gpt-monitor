@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import json
 
 def calculate_norms(filepath="data/history.csv"):
     if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
@@ -25,7 +26,11 @@ def calculate_norms(filepath="data/history.csv"):
     }
 
     with open("data/norms.json", "w") as f:
-        import json
         json.dump(norm, f)
 
     return norm
+
+def detect_anomaly(current_value, norm):
+    if norm is None:
+        return False
+    return current_value < norm["low"] or current_value > norm["high"]
