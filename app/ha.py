@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from .utils import log_data
+from utils import log_data
 
 def get_current_state():
     from dotenv import load_dotenv; load_dotenv()
