@@ -7,9 +7,11 @@ import os
 from ha import save_state_to_history
 
 import pytz
+from datetime import datetime
 
 tz = pytz.timezone("Europe/Warsaw")
 now = datetime.now(tz)
+
 
 st.write(f"Obecny czas lokalny: {now.strftime('%Y-%m-%d %H:%M:%S')}")
 st.set_page_config(layout="wide")
