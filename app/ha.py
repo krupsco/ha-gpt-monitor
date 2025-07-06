@@ -9,9 +9,6 @@ def get_current_state():
     HA_TOKEN = st.secrets["home_assistant"]["token"].strip()
     ENTITY_ID = st.secrets["monitoring"]["entity_id"].strip()
 
-    st.write(f"DEBUG: HA_URL = '{HA_URL}'")
-    st.write(f"DEBUG: ENTITY_ID = '{ENTITY_ID}'")
-
     headers = {
         "Authorization": f"Bearer {HA_TOKEN}",
         "Content-Type": "application/json"
