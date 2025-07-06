@@ -4,6 +4,8 @@ from analyzer import calculate_norms_for_entity, detect_anomaly
 from gpt import interpret_anomaly
 import pandas as pd
 import os
+from ha import save_state_to_history
+
 
 st.set_page_config(layout="wide")
 st.title("📡 Monitor czujników z Home Assistant + GPT")
@@ -40,6 +42,7 @@ st.markdown('<div class="sensor-grid">', unsafe_allow_html=True)
 
 for entity_id in entities:
     data = get_state_for_entity(entity_id)
+    save_state_to_history(entity_id, state)
     if not data:
         continue
 
