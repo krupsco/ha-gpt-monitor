@@ -1,22 +1,26 @@
-import openai
-import os
+from openai import OpenAI
+import streamlit as st
 
-def interpret_anomaly(value, norm, history):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
+
+def interpret_anomaly(current_value, norm, history):
+    prompt = f"""
+    Dane z czujnika energii wykazują odchylenie od normy.
+
+    Obecny odczyt: {current_value}
+    Średnia: {norm['mean']}, Odchylenie standardowe: {norm['std']}
+    Zakres typowy: {norm['low']} - {norm['high']}
+    Ostatnie odczyty: {history[-5:]}
     
-    prompt = f"""Obecna wartość: {value}
-Normy: {norm}
-Ostatnie wartości: {history[-10:].tolist()}
+    Wytłumacz, co może być przyczyną odchylenia.
+    """
 
-Czy obecna wartość to anomalia? Jak ją zinterpretować?
-"""
-
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": "Jesteś asystentem do analizy danych z systemu smart home."},
+            {"role": "system", "content": "Jesteś pomocnym analitykiem danych czujnikowych."},
             {"role": "user", "content": prompt}
         ]
     )
 
-    return response.choices[0].message.content.strip()
+    return response.choices[0].message.content
