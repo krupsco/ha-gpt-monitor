@@ -51,10 +51,16 @@ for entity_id in entities:
     unit = data["attributes"].get("unit_of_measurement", "")
     name = data["attributes"].get("friendly_name", "Brak nazwy")
 
-    norm = calculate_norms_for_entity(entity_id)  # zwraca słownik norm wg czasu
-    is_anomaly = detect_anomaly(state, norm)
+    last_updated_iso = data.get("last_updated")
+    if last_updated_iso:
+        from datetime import datetime
+        last_updated_dt = datetime.fromisoformat(last_updated_iso.replace("Z", "+00:00"))
+        last_updated_str = last_updated_dt.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        last_updated_str = "brak danych"
 
-    # reszta UI z podświetleniem jeśli is_anomaly True
+    norm = calculate_norms_for_entity(entity_id)
+    is_anomaly = detect_anomaly(state, norm)
 
     card_class = "sensor-card anomaly" if is_anomaly else "sensor-card"
 
@@ -66,18 +72,9 @@ for entity_id in entities:
         st.markdown(f"- **Encja:** `{entity_id}`")
         st.markdown(f"- **Aktualna wartość:** `{state} {unit}`")
         st.markdown(f"- **Norma:** {norm_display}")
+        st.markdown(f"- **Ostatnia aktualizacja:** {last_updated_str}")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(f"🧠 Interpretuj: {entity_id}"):
-                history_path = f"data/{entity_id.replace('.', '_')}_history.csv"
-                history = pd.read_csv(history_path)["state"].dropna().tolist() if os.path.exists(history_path) else []
-                explanation = interpret_anomaly(state, norm, history)
-                st.markdown(f"**GPT:** {explanation}")
-        with col2:
-            if st.button(f"📈 Historia: {entity_id}"):
-                st.markdown("*(Historia jeszcze niezaimplementowana)*")
+        # ... tutaj Twoje przyciski itp.
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
