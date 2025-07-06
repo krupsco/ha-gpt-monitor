@@ -4,6 +4,11 @@ from analyzer import calculate_norms, detect_anomaly
 from gpt import interpret_anomaly
 import pandas as pd
 
+HA_URL = st.secrets["home_assistant"]["url"]
+HA_TOKEN = st.secrets["home_assistant"]["token"]
+ENTITY_ID = st.secrets["monitoring"]["entity_id"]
+OPENAI_KEY = st.secrets["openai"]["api_key"]
+
 st.title("Monitor energii z Home Assistant + GPT")
 
 data = get_current_state()
