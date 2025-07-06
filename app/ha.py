@@ -7,19 +7,29 @@ import csv
 
 
 def get_state_for_entity(entity_id):
-    url = st.secrets["home_assistant"]["url"].strip()
-    token = st.secrets["home_assistant"]["token"]
+    HA_URL = st.secrets["home_assistant"]["url"].strip()
+    HA_TOKEN = st.secrets["home_assistant"]["token"].strip()
+
     headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {HA_TOKEN}",
+        "Content-Type": "application/json",
     }
-    try:
-        response = requests.get(f"{url}/api/states/{entity_id}", headers=headers)
-        if response.status_code == 200:
-            return response.json()
-    except Exception as e:
-        print(f"Błąd pobierania {entity_id}: {e}")
-    return None
+
+    url = f"{HA_URL}/api/states/{entity_id}"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        return None
+
+    data = response.json()
+
+    # Zwracamy również last_updated
+    return {
+        "state": data.get("state"),
+        "attributes": data.get("attributes", {}),
+        "last_updated": data.get("last_updated"),
+    }
+
 
 def get_current_state():
     HA_URL = st.secrets["home_assistant"]["url"].strip()
